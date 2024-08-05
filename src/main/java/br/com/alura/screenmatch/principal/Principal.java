@@ -57,7 +57,7 @@ public class Principal {
                                   .comparing(Series::getGenero))
                           .forEach(System.out::println);                //3. Buscar episodios da series
                   break;
-
+//teste
               case 3:
                   new BuscarEpisodio()
                           .getData(repository, entradaSerie());         //4. Buscar episodios da series
