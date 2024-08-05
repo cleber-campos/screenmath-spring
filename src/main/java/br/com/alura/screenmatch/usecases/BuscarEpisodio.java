@@ -1,54 +1,56 @@
 package br.com.alura.screenmatch.usecases;
 
-import br.com.alura.screenmatch.model.DadosSerie;
 import br.com.alura.screenmatch.model.DadosTemporada;
+import br.com.alura.screenmatch.model.Episodios;
+import br.com.alura.screenmatch.model.Series;
+import br.com.alura.screenmatch.repository.SerieRepository;
 import br.com.alura.screenmatch.service.ApiConsumer;
 import br.com.alura.screenmatch.service.ConverterDadosJson;
 import br.com.alura.screenmatch.service.URLGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class BuscarEpisodio {
-    private final Scanner leitura = new Scanner(System.in);
     private final ApiConsumer apiConsumer = new ApiConsumer();
     private final ConverterDadosJson conversorJson = new ConverterDadosJson();
     private final List<DadosTemporada> listaTemporadas = new ArrayList<>();
 
-    public List<DadosTemporada> execute(List<DadosSerie> listaDadosSerie){
-        //Exibe lista de series buscadas
-        System.out.println("Lista de Series Buscadas:");
-        listaDadosSerie.forEach(l-> System.out.println(l.tituloSerie()));
-        System.out.println('\n');
+    public void getData(SerieRepository repository, String nomeSerie) {
+        List<Series> listaDadosSerie = repository.findAll();
+        Optional<Series> dadosSerie = listaDadosSerie.stream()
+                .filter(l -> l.getTituloSerie().toLowerCase()
+                        .contains(nomeSerie.toLowerCase()))
+                .findFirst();
 
-        //Escolhe a serie que deseja buscar
-        System.out.print("Buscar a serie: ");
-        var nomeSerie = leitura.nextLine();
-        var dadosSerie =  listaDadosSerie.stream()
-                .filter(l -> l.tituloSerie().equalsIgnoreCase(nomeSerie))
-                .findFirst().orElse(null);
-        String nomeSerieBuscada = null;
-        if (dadosSerie != null) {
-            System.out.println("Serie encontrada");
-            nomeSerieBuscada = dadosSerie.tituloSerie();
-        }
-        System.out.println("Buscando dados....");
+        if (dadosSerie.isPresent()) {
+            System.out.println("Series encontrada");
+            var serieEncontrada = dadosSerie.get();
+            System.out.println("Buscando dados....");
+            try {
+                for (int i = 1; i <= serieEncontrada.getTotalTemporadas(); i++) {
+                    //Consumir API episodios
+                    var json = apiConsumer.getData(URLGenerator
+                            .Episodio(serieEncontrada.getTituloSerie(), i));
+                    //Criando lista com dados de episodios
+                    var dadosTemporada = conversorJson.getClass(json, DadosTemporada.class);
+                    listaTemporadas.add(dadosTemporada);
+                }
+                listaTemporadas.forEach(System.out::println);
 
-        try {
-            for (int numeroTemporada = 1; numeroTemporada <=
-                    Objects.requireNonNull(dadosSerie).totalTemporadas(); numeroTemporada++) {
-                //Consumir API episodios
-               var json = apiConsumer.getData(URLGenerator
-                       .Episodio(nomeSerieBuscada, numeroTemporada));
+                List<Episodios> episodios = listaTemporadas.stream()
+                        .flatMap(d -> d.episodios().stream()
+                                .map(e -> new Episodios(d.numeroTemporada(), e)))
+                                        .collect(Collectors.toList());
+                serieEncontrada.setEpisodios(episodios);
+                repository.save(serieEncontrada);
+                System.out.println("episodios salvos no banco");
 
-                //Criando lista com dados de episodios
-                var dadosTemporada = conversorJson.getClass(json, DadosTemporada.class);
-                listaTemporadas.add(dadosTemporada);
+            } catch (NullPointerException e) {
+                System.out.println("Dados nao encontrados! ");
             }
-        } catch (NullPointerException e) {
-            System.out.println("Dados nao encontrados! ");
         }
-        return listaTemporadas;
     }
 }

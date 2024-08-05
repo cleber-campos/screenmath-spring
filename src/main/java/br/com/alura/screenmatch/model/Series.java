@@ -3,6 +3,7 @@ package br.com.alura.screenmatch.model;
 import br.com.alura.screenmatch.model.enums.Categoria;
 import br.com.alura.screenmatch.model.traducao.BuscarTraducao;
 import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
@@ -10,7 +11,7 @@ import java.util.OptionalDouble;
 
 @Entity
 @Table(name = "tb_series")
-public class Serie{
+public class Series {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idSerie;
@@ -25,13 +26,14 @@ public class Serie{
     private String atores;
     private String sinopse;
     private String urlPoster;
-    @Transient
-    private List<EpisodioSerie> episodios = new ArrayList<>();
 
-    public Serie() {
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Episodios> episodios = new ArrayList<>();
+
+    public Series() {
     }
 
-    public Serie(DadosSerie dadosSerie){
+    public Series(DadosSerie dadosSerie){
         this.tituloSerie = dadosSerie.tituloSerie();
         this.totalTemporadas = dadosSerie.totalTemporadas();
         this.avaliacao = OptionalDouble.of(Double.parseDouble(dadosSerie.avaliacao())).orElse(0);
@@ -51,11 +53,12 @@ public class Serie{
         this.idSerie = idSerie;
     }
 
-    public List<EpisodioSerie> getEpisodios() {
+    public List<Episodios> getEpisodios() {
         return episodios;
     }
 
-    public void setEpisodios(List<EpisodioSerie> episodios) {
+    public void setEpisodios(List<Episodios> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
         this.episodios = episodios;
     }
 
