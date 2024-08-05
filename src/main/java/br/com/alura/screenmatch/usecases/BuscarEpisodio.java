@@ -19,31 +19,28 @@ public class BuscarEpisodio {
     private final List<DadosTemporada> listaTemporadas = new ArrayList<>();
 
     public void getData(SerieRepository repository, String nomeSerie){
-        //Escolhe a serie que deseja buscar
-        var dadosSerie = repository.findAll();
-        Optional<Series> serie = dadosSerie.stream()
-                .filter(s -> s.getTituloSerie().toLowerCase().contains(nomeSerie.toLowerCase()))
-                .findFirst();
+        Optional<Series> dadosSerie = repository.findByTituloSerieContainingIgnoreCase(nomeSerie);
 
-        if(serie.isPresent()) {
-            var serieEncontrada = serie.get();
+        if(dadosSerie.isPresent()) {
+            var serieEncontrada = dadosSerie.get();
                 try {
                     for (int i = 1; i <= serieEncontrada.getTotalTemporadas(); i++) {
-                        //Consumir API episodios
+                        //Consumir API com episodios da Serie
                         var json = apiConsumer.getData(URLGenerator
                                 .Episodio(serieEncontrada.getTituloSerie(), i));
 
-                        //Criando lista com dados de episodios
+                        //Criar lista de temporadas
                         var dadosTemporada = conversorJson.getClass(json, DadosTemporada.class);
                         listaTemporadas.add(dadosTemporada);
                     }
-
+                    //Criar lista de episodios
                     List<Episodios> episodios = listaTemporadas.stream()
                             .flatMap(d -> d.episodios().stream()
                                     .map(e -> new Episodios(d.numeroTemporada(), e)))
                             .collect(Collectors.toList());
 
                     serieEncontrada.setEpisodios(episodios);
+                    //Salvar episodios no banco
                     repository.save(serieEncontrada);
 
                 } catch (NullPointerException e) {

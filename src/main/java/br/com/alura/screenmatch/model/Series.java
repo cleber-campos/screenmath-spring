@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
 
-
 @Entity
 @Table(name = "tb_series")
 public class Series {
@@ -17,14 +16,14 @@ public class Series {
     private Long idSerie;
     @Column(unique = true)
     private String tituloSerie;
-    private Integer totalTemporadas;
     private Double avaliacao;
+    private Integer totalTemporadas;
+    private String sinopse;
     @Enumerated(EnumType.STRING)
     private Categoria genero;
     private String diretor;
     private String escritor;
     private String atores;
-    private String sinopse;
     private String urlPoster;
 
     @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -44,8 +43,6 @@ public class Series {
         this.sinopse = BuscarTraducao.inglesPortugues(dadosSerie.sinopse()).trim();
         this.urlPoster = dadosSerie.urlPoster();
     }
-
-
 
     public Long getIdSerie() {
         return idSerie;
@@ -138,13 +135,13 @@ public class Series {
 
     @Override
     public String toString() {
-        return "Genero: " + genero +
-                " Titulo: " + tituloSerie +
-                ", Total de Temporadas: " + totalTemporadas +
+        return  "Titulo: " + tituloSerie +
                 ", Avaliacao IMDB: " + avaliacao +
+                ", Total de Temporadas: " + totalTemporadas +
+                ", Sinopse: " + sinopse +
+                ", Genero: " + genero +
                 ", Diretor: " + diretor +
                 ", Atores: " + atores +
-                ", Sinopse: " + sinopse +
                 ", urlPoster: " + urlPoster;
     }
 }

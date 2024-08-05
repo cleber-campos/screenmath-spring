@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-
 @Entity
 @Table(name = "tb_episodios")
 public class Episodios {
@@ -12,10 +11,10 @@ public class Episodios {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEpisodio;
-    private Integer numeroTemporada;
-    private String  titulo;
-    private Integer numeroEpisodio;
+    private String  tituloEpisodio;
     private Double avaliacao;
+    private Integer numeroEpisodio;
+    private Integer numeroTemporada;
     private LocalDate dataLancamento;
 
     @ManyToOne
@@ -26,7 +25,7 @@ public class Episodios {
     }
     public Episodios(Integer numeroTemporada, DadosEpisodio episodioDTO) {
         this.numeroTemporada = numeroTemporada;
-        this.titulo = episodioDTO.titulo();
+        this.tituloEpisodio = episodioDTO.tituloEpisodio();
         this.numeroEpisodio = episodioDTO.numeroEpisodio();
         try {
             this.avaliacao = Double.valueOf(episodioDTO.avaliacao());
@@ -57,12 +56,12 @@ public class Episodios {
         this.numeroTemporada = numeroTemporada;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String gettituloEpisodio() {
+        return tituloEpisodio;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void settituloEpisodio(String tituloEpisodio) {
+        this.tituloEpisodio = tituloEpisodio;
     }
 
     public Integer getNumeroEpisodio() {
@@ -99,10 +98,10 @@ public class Episodios {
 
     @Override
     public String toString() {
-        return "N Temporadas:" + numeroTemporada +
-                ", Titulo: " + titulo + '\'' +
-                ", NumeroEpisodio: " + numeroEpisodio +
-                ", Avaliacao=" + avaliacao +
-                ", Data de Lancamento=" + dataLancamento;
+        return  "titulo Episodio: " + tituloEpisodio +
+                ", Numero Episodio: " + numeroEpisodio +
+                ", Avaliacao: " + avaliacao +
+                ", Numero de Temporadas: " + numeroTemporada +
+                ", Data de Lancamento: " + dataLancamento;
     }
 }
