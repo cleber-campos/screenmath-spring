@@ -11,11 +11,9 @@ import br.com.alura.screenmatch.service.URLGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 public class BuscarEpisodio {
-    private final Scanner leitura = new Scanner(System.in);
     private final ApiConsumer apiConsumer = new ApiConsumer();
     private final ConverterDadosJson conversorJson = new ConverterDadosJson();
     private final List<DadosTemporada> listaTemporadas = new ArrayList<>();
