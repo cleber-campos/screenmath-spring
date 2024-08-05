@@ -45,6 +45,8 @@ public class Series {
         this.urlPoster = dadosSerie.urlPoster();
     }
 
+
+
     public Long getIdSerie() {
         return idSerie;
     }
