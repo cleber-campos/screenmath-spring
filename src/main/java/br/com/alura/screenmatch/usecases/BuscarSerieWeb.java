@@ -8,9 +8,11 @@ import br.com.alura.screenmatch.service.URLGenerator;
 
 import java.util.Objects;
 
-public class BuscarSerie {
+public class BuscarSerieWeb {
 
     public static Series getData(String nomeSerie) {
+
+
         final ApiConsumer apiConsumer = new ApiConsumer();
         final ConverterDadosJson conversorJson = new ConverterDadosJson();
         DadosSerie dadosSerie = null;

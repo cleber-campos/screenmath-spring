@@ -15,7 +15,7 @@ public class ScreenmatchApplication implements CommandLineRunner {
     public static void main(String[] args) {
 		SpringApplication.	run(ScreenmatchApplication.class, args);
 	}
-	public void run(String... args) throws Exception {
+	public void run(String... args) {
 		Principal principal = new Principal(repository);
 		principal.exibeMenu();
 	}

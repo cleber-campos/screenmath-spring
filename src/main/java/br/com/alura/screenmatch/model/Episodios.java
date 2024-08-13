@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.model.traducao.BuscarTraducao;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ public class Episodios {
     }
     public Episodios(Integer numeroTemporada, DadosEpisodio episodioDTO) {
         this.numeroTemporada = numeroTemporada;
-        this.tituloEpisodio = episodioDTO.tituloEpisodio();
+        this.tituloEpisodio = BuscarTraducao.inglesPortugues(episodioDTO.tituloEpisodio()).trim();
         this.numeroEpisodio = episodioDTO.numeroEpisodio();
         try {
             this.avaliacao = Double.valueOf(episodioDTO.avaliacao());
