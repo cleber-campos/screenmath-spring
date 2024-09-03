@@ -1,5 +1,6 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.dto.EpisodioDTO;
 import br.com.alura.screenmatch.model.traducao.BuscarTraducao;
 import jakarta.persistence.*;
 
@@ -7,7 +8,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "tb_episodios")
-public class Episodios {
+public class Episodio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,11 +21,11 @@ public class Episodios {
 
     @ManyToOne
     @JoinColumn(name = "serie_id")
-    private Series serie;
+    private Serie serie;
 
-    public Episodios(){
+    public Episodio(){
     }
-    public Episodios(Integer numeroTemporada, DadosEpisodio episodioDTO) {
+    public Episodio(Integer numeroTemporada, EpisodioDTO episodioDTO) {
         this.numeroTemporada = numeroTemporada;
         this.tituloEpisodio = BuscarTraducao.inglesPortugues(episodioDTO.tituloEpisodio()).trim();
         this.numeroEpisodio = episodioDTO.numeroEpisodio();
@@ -89,11 +90,11 @@ public class Episodios {
         this.dataLancamento = dataLancamento;
     }
 
-    public Series getSerie() {
+    public Serie getSerie() {
         return serie;
     }
 
-    public void setSerie(Series serie) {
+    public void setSerie(Serie serie) {
         this.serie = serie;
     }
 

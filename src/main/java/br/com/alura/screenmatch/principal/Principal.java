@@ -1,17 +1,17 @@
 package br.com.alura.screenmatch.principal;
 
-import br.com.alura.screenmatch.model.Episodios;
-import br.com.alura.screenmatch.model.Series;
+import br.com.alura.screenmatch.model.Episodio;
+import br.com.alura.screenmatch.model.Serie;
 import br.com.alura.screenmatch.model.enums.Categoria;
-import br.com.alura.screenmatch.repository.SerieRepository;
-import br.com.alura.screenmatch.usecases.BuscarEpisodioWeb;
+import br.com.alura.screenmatch.model.repository.SerieRepository;
+import br.com.alura.screenmatch.model.usecases.BuscarEpisodioWeb;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-import static br.com.alura.screenmatch.usecases.BuscarSerieWeb.getData;
+import static br.com.alura.screenmatch.model.usecases.BuscarSerieWeb.getData;
 
 public class Principal {
     private final Scanner leitura = new Scanner(System.in);
@@ -52,11 +52,11 @@ public class Principal {
                     buscarSerieTop5();
                 break;
 
-                case 7:                                                                 //Listar series buscadas
+                case 7:                                                                 //Listar serie buscadas
                     listarSeriesBuscadas();
                 break;
 
-                case 8:                                                                 //Buscar episodios da series
+                case 8:                                                                 //Buscar episodios da serie
                     buscarNovosEpisodios();
                 break;
 
@@ -69,6 +69,10 @@ public class Principal {
 
                 case 11:
                     buscarEpisodioPorDataLancamento();
+                break;
+
+                case 12:
+                    buscarSeriesLancamentos();
                 break;
 
                 case 0:                                                                 //Sair
@@ -108,14 +112,10 @@ public class Principal {
         var serie = serieExisteNoBanco(nomeSerie);
         if(serie.isPresent()) {
             var serieEncontrada = serie.get();
-            var episodio = repository.episodioExisteNoBanco(serieEncontrada);
-            System.out.println(episodio);
-            if(episodio.isEmpty()) {
-                Series serieComEpisodios = new BuscarEpisodioWeb().getData(serieEncontrada);
+            Serie serieComEpisodios = new BuscarEpisodioWeb().getData(serieEncontrada);
                 //Salvar episodios no banco
                 repository.save(serieComEpisodios);
-                System.out.println("Episodios salvos no banco");
-            } else System.out.println("\n Os episodios ja existem no banco!");
+                System.out.println("Episodio salvos no banco");
         } else System.out.println("\n Esta serie nao exite no banco!");
     }
 
@@ -123,20 +123,20 @@ public class Principal {
         var nomeSerie = validaEntradaNomeSerie();
         var serie = serieExisteNoBanco(nomeSerie);
         if(serie.isPresent()) {
-            System.out.println("'\n Serie ja exite no banco!");
+            System.out.println("'\n Serie ja existe no banco!");
         } else {
-            Series novaSerie = getData(nomeSerie);
+            Serie novaSerie = getData(nomeSerie);
             repository.save(novaSerie);
             System.out.println("'\n Serie salva no banco!");
         }
     }
 
     private void buscarSeriePorTitulo(String nomeSerie) {
-        Optional<Series> seriePorTitulo = repository
+        Optional<Serie> seriePorTitulo = repository
                 .findByTituloSerieContainingIgnoreCase(nomeSerie);
         if(seriePorTitulo.isPresent()){
             headerSerie();
-            System.out.println(seriePorTitulo.get());
+            System.out.println(seriePorTitulo);
         }  else System.out.println("Serie nao encontrada");
     }
 
@@ -190,34 +190,43 @@ public class Principal {
         } else System.out.println("Serie nao encontrada");
     }
 
+    private void buscarSeriesLancamentos(){
+        var seriesLancamento = repository
+                .obterSeriesLancamentos();
+        if(!seriesLancamento.isEmpty()) {
+            headerSerie();
+            seriesLancamento.forEach(s -> System.out.println("Avaliacao: " + s.getAvaliacao() + " - "+ s.getTituloSerie()));
+        } else System.out.println("Serie nao encontrada");
+    }
+
     private void listarSeriesBuscadas() {
         headerSerie();
-        List<Series> listaSeries = repository.findAll();
+        List<Serie> listaSeries = repository.findAll();
         listaSeries.stream()
-                .sorted(Comparator.comparing(Series::getGenero))
+                .sorted(Comparator.comparing(Serie::getGenero))
                 .forEach(System.out::println);
     }
 
     private void buscarEpisodioPorNome() {
         System.out.print("Digite o nome do episodio: ");
         var nomeEpisodio = leitura.nextLine();
-        List<Episodios> episodiosEncontrados = repository.episodiosPorNome(nomeEpisodio);
+        List<Episodio> episodioEncontrados = repository.episodiosPorNome(nomeEpisodio);
         headerEpisodio();
-        episodiosEncontrados.forEach(s -> System.out.println(
+        episodioEncontrados.forEach(s -> System.out.println(
                 "Episodio: " + s.getNumeroEpisodio() +
                 " | Titulo: "+ s.gettituloEpisodio() +
                 " | Avaliacao: " + s.getAvaliacao()));
     }
 
     private void buscarEpisodioTop5() {
-        Optional<Series> seriePorTitulo = repository
+    Optional<Serie> seriesPorTitulo = repository
                 .findByTituloSerieContainingIgnoreCase(validaEntradaNomeSerie());
-        if(seriePorTitulo.isPresent()){
-            Series serieEncontrada = seriePorTitulo.get();
-            List <Episodios> episodiosTop5 = repository.episodiosTop5(
+        if(seriesPorTitulo.isPresent()){
+            Serie serieEncontrada = seriesPorTitulo.get();
+            List <Episodio> episodioTop5 = repository.episodiosTop5(
                     serieEncontrada);
             headerEpisodio();
-            episodiosTop5.forEach(s -> System.out.println(
+            episodioTop5.forEach(s -> System.out.println(
                 " Episodio: " + s.getNumeroEpisodio() +
                 " | Temporada : " + s.getNumeroTemporada() +
                 " | Titulo: " + s.gettituloEpisodio() +
@@ -225,7 +234,7 @@ public class Principal {
         }  else System.out.println("Serie nao encontrada");
     }
 
-    private Optional<Series> serieExisteNoBanco(String nomeSerie) {
+    private Optional<Serie> serieExisteNoBanco(String nomeSerie) {
         return repository.findByTituloSerieContainingIgnoreCase(nomeSerie);
     }
 
@@ -245,6 +254,7 @@ public class Principal {
                   9 - Buscar Episodio por Nome
                   10- Buscar Top 5 episodios
                   11- Buscar Epsodios por Data Lancamento
+                  12- Buscar Series Lancamentos
                   0 - Sair
                   ------------------------------
                   """;

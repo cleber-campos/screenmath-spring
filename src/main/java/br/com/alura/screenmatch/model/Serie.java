@@ -1,7 +1,9 @@
 package br.com.alura.screenmatch.model;
 
+import br.com.alura.screenmatch.dto.SerieRequestDTO;
 import br.com.alura.screenmatch.model.enums.Categoria;
 import br.com.alura.screenmatch.model.traducao.BuscarTraducao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.OptionalDouble;
 
 @Entity
 @Table(name = "tb_series")
-public class Series {
+public class Serie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idSerie;
@@ -21,27 +23,24 @@ public class Series {
     private String sinopse;
     @Enumerated(EnumType.STRING)
     private Categoria genero;
-    private String diretor;
-    private String escritor;
     private String atores;
     private String urlPoster;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Episodios> episodios = new ArrayList<>();
+    private List<Episodio> episodios = new ArrayList<>();
 
-    public Series() {
+    public Serie() {
     }
 
-    public Series(DadosSerie dadosSerie){
-        this.tituloSerie = dadosSerie.tituloSerie();
-        this.totalTemporadas = dadosSerie.totalTemporadas();
-        this.avaliacao = OptionalDouble.of(Double.parseDouble(dadosSerie.avaliacao())).orElse(0);
-        this.genero = Categoria.fromString(dadosSerie.genero().split(",")[0].trim());
-        this.diretor = dadosSerie.diretor();
-        this.escritor = dadosSerie.escritor();
-        this.atores = dadosSerie.atores();
-        this.sinopse = BuscarTraducao.inglesPortugues(dadosSerie.sinopse()).trim();
-        this.urlPoster = dadosSerie.urlPoster();
+    public Serie(SerieRequestDTO serieRequestDTO){
+        this.tituloSerie = serieRequestDTO.tituloSerie();
+        this.totalTemporadas = serieRequestDTO.totalTemporadas();
+        this.avaliacao = OptionalDouble.of(Double.parseDouble(String.valueOf(serieRequestDTO.avaliacao()))).orElse(0);
+        this.genero = Categoria.fromString(String.valueOf(serieRequestDTO.genero()).split(",")[0].trim());
+        this.atores = serieRequestDTO.atores();
+        this.sinopse = BuscarTraducao.inglesPortugues(serieRequestDTO.sinopse()).trim();
+        this.urlPoster = serieRequestDTO.urlPoster();
     }
 
     public Long getIdSerie() {
@@ -50,15 +49,6 @@ public class Series {
 
     public void setIdSerie(Long idSerie) {
         this.idSerie = idSerie;
-    }
-
-    public List<Episodios> getEpisodios() {
-        return episodios;
-    }
-
-    public void setEpisodios(List<Episodios> episodios) {
-        episodios.forEach(e -> e.setSerie(this));
-        this.episodios = episodios;
     }
 
     public String getTituloSerie() {
@@ -93,22 +83,6 @@ public class Series {
         this.genero = genero;
     }
 
-    public String getDiretor() {
-        return diretor;
-    }
-
-    public void setDiretor(String diretor) {
-        this.diretor = diretor;
-    }
-
-    public String getEscritor() {
-        return escritor;
-    }
-
-    public void setEscritor(String escritor) {
-        this.escritor = escritor;
-    }
-
     public String getAtores() {
         return atores;
     }
@@ -133,6 +107,15 @@ public class Series {
         this.urlPoster = urlPoster;
     }
 
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        this.episodios = episodios;
+    }
+
     @Override
     public String toString() {
         return  "Titulo: " + tituloSerie +
@@ -140,7 +123,6 @@ public class Series {
                 ", Total de Temporadas: " + totalTemporadas +
                 ", Sinopse: " + sinopse +
                 ", Genero: " + genero +
-                ", Diretor: " + diretor +
                 ", Atores: " + atores +
                 ", urlPoster: " + urlPoster;
     }
