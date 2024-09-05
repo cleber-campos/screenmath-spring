@@ -23,7 +23,7 @@ public class EpisodioResponseController {
     }
 
     @GetMapping(value = "/{id}/temporadas/{numeroTemporada}")
-    public List<EpisodioResponseDTO> obterTodasAsTemporadas(@PathVariable Long id, @PathVariable Long numeroTemporada){
+    public List<EpisodioResponseDTO> obterTemporadasPoNumero(@PathVariable Long id, @PathVariable Integer numeroTemporada){
         return episodioServiceResponse.obterTemporadasPoNumero(id, numeroTemporada);
     }
 

@@ -27,20 +27,20 @@ public class EpisodioResponseService {
             Serie s = serie.get();
             return s.getEpisodios().stream()
                     .map(e -> new EpisodioResponseDTO(e.getNumeroTemporada(),
-                            e.getNumeroEpisodio(), e.gettituloEpisodio()))
+                            e.getNumeroEpisodio(), e.getTituloEpisodio()))
                     .collect(Collectors.toList());
         }
         return null;
     }
 
-    public List<EpisodioResponseDTO> obterTemporadasPoNumero(Long id, Long numeroTemporada) {
+    public List<EpisodioResponseDTO> obterTemporadasPoNumero(Long id, Integer numeroTemporada) {
         return converteDadosDTO(episodioRepository.episodiosPorNumeroTemporada(id, numeroTemporada));
     }
 
     private List<EpisodioResponseDTO> converteDadosDTO (List<Episodio> episodios){
         return episodios.stream()
                 .map(e -> new EpisodioResponseDTO(e.getNumeroTemporada(),
-                        e.getNumeroEpisodio(), e.gettituloEpisodio()))
+                        e.getNumeroEpisodio(), e.getTituloEpisodio()))
                 .collect(Collectors.toList());
     }
 

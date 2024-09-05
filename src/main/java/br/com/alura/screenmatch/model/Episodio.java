@@ -58,11 +58,11 @@ public class Episodio {
         this.numeroTemporada = numeroTemporada;
     }
 
-    public String gettituloEpisodio() {
+    public String getTituloEpisodio() {
         return tituloEpisodio;
     }
 
-    public void settituloEpisodio(String tituloEpisodio) {
+    public void setTituloEpisodio(String tituloEpisodio) {
         this.tituloEpisodio = tituloEpisodio;
     }
 

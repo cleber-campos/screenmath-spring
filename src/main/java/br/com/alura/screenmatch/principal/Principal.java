@@ -100,7 +100,7 @@ public class Principal {
                 episodiosPorData.forEach(s -> System.out.println(
                         " Episodio: " + s.getNumeroEpisodio() +
                         " | Temporada : " + s.getNumeroTemporada() +
-                        " | Titulo: " + s.gettituloEpisodio() +
+                        " | Titulo: " + s.getTituloEpisodio() +
                         " | Data Lancamento: " + s.getDataLancamento() +
                         " | Avaliacao: " + s.getAvaliacao()));
             } else System.out.println("\n Os episodios ja existem no banco!");
@@ -214,7 +214,7 @@ public class Principal {
         headerEpisodio();
         episodioEncontrados.forEach(s -> System.out.println(
                 "Episodio: " + s.getNumeroEpisodio() +
-                " | Titulo: "+ s.gettituloEpisodio() +
+                " | Titulo: "+ s.getTituloEpisodio() +
                 " | Avaliacao: " + s.getAvaliacao()));
     }
 
@@ -229,7 +229,7 @@ public class Principal {
             episodioTop5.forEach(s -> System.out.println(
                 " Episodio: " + s.getNumeroEpisodio() +
                 " | Temporada : " + s.getNumeroTemporada() +
-                " | Titulo: " + s.gettituloEpisodio() +
+                " | Titulo: " + s.getTituloEpisodio() +
                 " | Avaliacao: " + s.getAvaliacao()));
         }  else System.out.println("Serie nao encontrada");
     }
